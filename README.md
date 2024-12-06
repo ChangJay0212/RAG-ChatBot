@@ -1,9 +1,9 @@
-
 # Chatbot Service
 
-This chatbot provides RAG (Retrieval-Augmented Generation) functionality, allowing users to easily ask questions.
+This chatbot provides RAG (Retrieval-Augmented Generation) functionality, allowing users to easily ask questions. The model used for this service is based on [Ollama](https://github.com/ollama/ollama).
 
 ## User Usage
+![image](/docs/example.gif)
 
 ### Start the Service
 
@@ -24,12 +24,5 @@ docker exec -it rag_v1 /bin/bash
 docker compose down
 ```
 
-###  How to update vector database?
-* Follow [Vectorization](/docs/Vectorization.md) to update new data to vector database.
-    
-
-## Other
-* [Development readme](/docs/README.DEV.md) 
-* [Update map](/docs/UPDATE.md)
-* [Todo](/docs/TODO.md)
-
+### How to update vector database?
+* F
