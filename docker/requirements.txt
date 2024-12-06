@@ -1,0 +1,22 @@
+#web service
+fastapi==0.105.0
+websockets==12.0
+httpx==0.27.0
+uvicorn==0.28.0
+
+#llama-index
+llama_index==0.12.2
+llama-index-vector-stores-postgres==0.3.2
+
+#observe
+llama-index-callbacks-arize-phoenix==0.3.0
+opentelemetry-sdk==1.28.2
+
+#redis
+redis==5.0.4
+
+#data process
+PyMuPDF==1.24.9
+
+#other
+colorlog==6.8.2 

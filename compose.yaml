@@ -1,0 +1,108 @@
+name: inno_rag
+
+networks:
+  rag:
+    name: rag
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.55.0/24
+          gateway: 192.168.55.1
+
+services:
+  postgres:
+    image: lichieh/pgvector:v1.0 
+    build: ./docker/docker-postgresql-multiple-databases
+    container_name: pgvector
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: phoenix_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    env_file:
+      - .env
+    volumes:
+      - ./database/postgres/:${PGDATA}
+      - ./docker/docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
+    ports:
+      - ${POSTGRES_PORT}:5432
+    command: "-c max_connections=200 -p 5432"
+    networks:
+      - rag
+
+  phoenix:
+    image: arizephoenix/phoenix:latest # Must be greater than 4.0 version to work
+    container_name: phoenix_db
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    ports:
+      - 6006:6006  # PHOENIX_PORT
+    environment:
+      - PHOENIX_SQL_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pgvector:5432/${PHOENIX_DB}
+    stop_signal: SIGKILL  
+    networks:
+      - rag
+
+  redis:
+    image: redis:7.2.4  
+    container_name: redis_db
+    ports: 
+      - ${REDIS_PORT}:6379
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+    networks:
+      - rag
+
+  core:
+    image: lichieh/rag:v1.0 
+    build: ./docker
+    container_name: rag_v1
+    volumes:
+      - ${ROOT}:/workspace/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - phoenix
+      - redis
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    command: bash -c "uvicorn app:app --host 0.0.0.0 --port 8000 --reload & exec bash"
+    ports:
+      - "8000:8000"
+      - "8501:8501"
+    networks: 
+      rag:
+        ipv4_address: 192.168.55.10
+    ipc: host
+    runtime: nvidia
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  simple-ui:
+    image: lichieh/simple-ui
+    build: 
+      context: ./static
+      dockerfile: ./Dockerfile
+    container_name: simple-ui
+    restart: always
+    depends_on:
+      - core
+    ports:
+      - 8502:8502
+    networks: 
+      - rag
+    environment:
+      - RAG_PORT=8000
+      - RAG_HOST=192.168.55.10
