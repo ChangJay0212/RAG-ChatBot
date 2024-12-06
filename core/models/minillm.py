@@ -24,7 +24,7 @@ class MinillmModel(BaseEmbedding, TextEmbedding):
     def __init__(
         self,
         model_name: str = "all-minilm:latest",
-        host: str = "10.204.16.75",
+        host: str = "127.0.0.1",
         port: int = 11434,
     ):
         super().__init__(

@@ -27,7 +27,8 @@ from tools.logger import config_logger
 from tools.redis_handler import RedisNotifier
 from tools.user_register import UserHandler
 
-model_server_url = "10.204.16.75"
+model_server_url = os.environ.get("OllAMA_HOST", "127.0.0.1")
+model_server_port = os.environ.get("OllAMA_PORT", "11434")
 # --------------Connect to phoenix, start-----------------------
 os.environ["PHOENIX_HOST"] = "phoenix"  #
 os.environ["PHOENIX_PORT"] = "6006"
@@ -73,11 +74,13 @@ logger = config_logger(
 redis = RedisNotifier()
 
 # Init model
-gen_text_model = Llama31Model(host=model_server_url, redis=redis)
+gen_text_model = Llama31Model(
+    host=model_server_url, port=model_server_port, redis=redis
+)
 logger.info(
     f"Success init model to Gen text. model name = '{gen_text_model.model_name}'"
 )
-text_emb_model = MinillmModel(host=model_server_url)
+text_emb_model = MinillmModel(host=model_server_url, port=model_server_port)
 logger.info(
     f"Success init model to Embedding text. model name = '{text_emb_model.model_name}'"
 )

@@ -56,6 +56,8 @@ def build_argparser():
 
 
 if __name__ == "__main__":
+    model_server_url = os.environ.get("OllAMA_HOST", "127.0.0.1")
+    model_server_port = os.environ.get("OllAMA_PORT", "11434")
     args = build_argparser().parse_args()
     if len(os.sys.argv) == 1:
         args.print_help()
@@ -64,7 +66,7 @@ if __name__ == "__main__":
     table_name = str(args.table_name)
     tools = str(args.tools)
 
-    text_emb_model = MinillmModel()
+    text_emb_model = MinillmModel(host=model_server_url, port=model_server_port)
     # img_emb_model = ClipModel()
 
     # rag_service = VectorizationService(
