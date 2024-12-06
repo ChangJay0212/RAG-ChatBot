@@ -1,6 +1,6 @@
 # Chatbot Service
 
-This chatbot provides RAG (Retrieval-Augmented Generation) functionality, allowing users to easily ask questions. The model used for this service is based on [Ollama](https://github.com/ollama/ollama).
+This chatbot provides RAG (Retrieval-Augmented Generation) functionality, allowing users to easily ask questions. The model used for this service is based on [Ollama](https://github.com/ollama/ollama). The frontend is implemented using [Streamlit](https://github.com/streamlit/streamlit).
 
 ## User Usage
 ![image](/docs/example.gif)
@@ -25,4 +25,10 @@ docker compose down
 ```
 
 ### How to update vector database?
-* F
+* Follow [Vectorization](/docs/Vectorization.md) to update new data to vector database.
+
+## Other
+* [Development readme](/docs/README.DEV.md) 
+* [Update map](/docs/UPDATE.md)
+* [Todo](/docs/TODO.md)
+
